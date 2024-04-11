@@ -462,10 +462,25 @@ print_appsmith_info(){
   tr '\n' ' ' < /opt/appsmith/info.json
 }
 
+function setup_new_relic_agent(){
+   if [[ ${APPSMITH_ENABLE_NEW_RELIC_LOGGING-} = 1 ]]; then
+     export APPSMITH_JAVA_ARGS+=" -javaagent:/opt/newrelic/newrelic.jar"
+     # By default APPSMITH_ENABLE_NEW_RELIC_LOGGING=0
+     # To enable new relic_agent APPSMITH_ENABLE_NEW_RELIC_LOGGING=1
+     cat > /opt/newrelic/newrelic.yml << EOF
+common:
+  license_key: $APPSMITH_APP_NEW_RELIC_LICENSE_KEY
+  app_name: $APPSMITH_NEW_RELIC_APP_NAME
+EOF
+   fi
+}
+
 # Main Section
 print_appsmith_info
 init_loading_pages
+setup_new_relic_agent
 init_env_file
+
 setup_proxy_variables
 unset_unused_variables
 
